@@ -18,7 +18,7 @@ public class AutoBooker {
         String userDirectory = System.getProperty("user.dir");
 
         String chromeVersion = getChromeVersion();
-        boolean realBooking = "B".equalsIgnoreCase(ConsoleUtils.ask("Run for test (T) or real booking (B)? "));
+        boolean realBooking = "B".equalsIgnoreCase(ConsoleUtils.ask("Run for test (T) or real booking (B)? (if test, the bot will not click on the Book button)"));
         String jsonContent = readJsonFile();
 
         configureSelenium(userDirectory, chromeVersion);
