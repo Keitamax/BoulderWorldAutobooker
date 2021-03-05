@@ -1,17 +1,3 @@
-/*******************************************************************************
- * Copyright(c) FriarTuck Pte Ltd ("FriarTuck"). All Rights Reserved.
- *
- * This software is the confidential and proprietary information of FriarTuck.
- * ("Confidential Information"). You shall not disclose such Confidential
- * Information and shall use it only in accordance with the terms of the license
- * agreement you entered into with FriarTuck.
- *
- * FriarTuck MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE
- * SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-
- * INFRINGEMENT. FriarTuck SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY LICENSEE
- * AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES.
- ******************************************************************************/
 package com.max.autobooker;
 
 import com.max.autobooker.dto.BookingInfo;
@@ -25,15 +11,21 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
 import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 
 /**
  * @author Maxime Rocchia
+ * Runnable that will try to book for a climber on a specific date and timeslot.
+ * If the date is too far (monday of current week is more than 1 week before monday of booking date), the thread will end without booking
+ * The thread will sleep until the time of bookings opening
  */
 public class BookerRunnable implements Runnable {
-    private static final long TIMEOUT_SECONDS = 5L;
+    private static final long TIMEOUT_SECONDS = 4L;
     private static final String BASE_URL = "https://www.picktime.com/566fe29b-2e46-4a73-ad85-c16bfc64b34b";
+    private static final LocalTime BOOKINGS_OPENING_TIME = LocalTime.of(12, 0);
 
     private BookingInfo bookingInfo;
     private Climber climber;
@@ -45,15 +37,27 @@ public class BookerRunnable implements Runnable {
         this.bookingInfo = bookingInfo;
         this.climber = climber;
         this.isRealBooking = isRealBooking;
-        driver = new ChromeDriver();
-        webDriverWait = new WebDriverWait(driver, TIMEOUT_SECONDS);
     }
 
     @Override
     public void run() {
         try {
+            LocalDate mondayOfCurrentWeek = DateUtils.getMondayOfSameWeek(LocalDate.now());
+            LocalDate mondayOfBookingWeek = DateUtils.getMondayOfSameWeek(bookingInfo.getDate());
+            long daysUntilBookingsOpen = ChronoUnit.DAYS.between(mondayOfCurrentWeek, mondayOfBookingWeek) - 7;
+            if(daysUntilBookingsOpen > 0) {
+                System.out.println(getBookingInfoString() + ": " + "Bookings open on monday 1 week before the booking date. It's too early today!");
+                return;
+            }
+
+            if(mondayOfCurrentWeek.equals(LocalDate.now())) {
+                waitUntilBookingsOpenToday();
+            }
+
+            driver = new ChromeDriver();
+            webDriverWait = new WebDriverWait(driver, TIMEOUT_SECONDS);
             this.bookSlot(bookingInfo, climber, this.isRealBooking);
-            Thread.sleep(60000);
+//            Thread.sleep(60000);
         } catch (Exception e) {
             System.out.println("Error occured: " + e.getMessage());
         }
@@ -66,7 +70,6 @@ public class BookerRunnable implements Runnable {
 
     private void bookSlot(BookingInfo bookingInfo, Climber climber, boolean realBooking) throws InterruptedException {
         driver.get(BASE_URL);
-
         waitAndThenClick(By.cssSelector(".modal-header span"));
         waitAndThenClick(By.cssSelector("li:nth-child(1) > .bl > div:nth-child(1)"));
 
@@ -84,7 +87,7 @@ public class BookerRunnable implements Runnable {
                     + timeSlotLabel
                     + ")]]"));
         } catch (TimeoutException e) {
-            System.out.println("Could not find timeslot " + timeSlotLabel + ". Refreshing the page...");
+            System.out.println(getBookingInfoString() + ": " + "Could not find timeslot " + timeSlotLabel + ". Refreshing the page...");
             bookSlot(bookingInfo, climber, realBooking);
         }
 
@@ -97,6 +100,26 @@ public class BookerRunnable implements Runnable {
         if (realBooking) {
             driver.findElement(By.cssSelector(".booknow")).click();
         }
+    }
+
+    private String getBookingInfoString() {
+        return "Booking " + bookingInfo.getDate() + " at " + bookingInfo.getTimeslot();
+    }
+
+    /**
+     * Will put the thread to sleep until the time of the bookings come.
+     */
+    private void waitUntilBookingsOpenToday() throws InterruptedException {
+        long timeDifference = Duration.between(LocalTime.now(), BOOKINGS_OPENING_TIME).getSeconds();
+        if(timeDifference < 0) {
+            return;
+        }
+        System.out.println(getBookingInfoString() + ": "
+                + timeDifference + " seconds "
+                + "(" + timeDifference / 60 + " mn) "
+                + "until bookings open at " + BOOKINGS_OPENING_TIME.toString()
+                + ". Sleeping now...");
+        Thread.sleep((timeDifference - 1) * 1000);
     }
 
     /**
@@ -136,8 +159,6 @@ public class BookerRunnable implements Runnable {
 
     /**
      * Scrolls to the given element to ensure it is displayed on current screen
-     *
-     * @param element
      */
     private void scrollToElement(WebElement element) {
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
