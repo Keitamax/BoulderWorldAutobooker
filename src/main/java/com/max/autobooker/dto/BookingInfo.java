@@ -12,23 +12,35 @@
  * INFRINGEMENT. FriarTuck SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY LICENSEE
  * AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES.
  ******************************************************************************/
-package com.max.autobooker;
+package com.max.autobooker.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Collection;
+import java.util.Date;
 
 /**
  * @author Maxime Rocchia
  */
 @Getter @Setter
-public class Climber {
-    @JsonProperty
-    private String name;
+public class BookingInfo {
 
     @JsonProperty
-    private String email;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    private Date date;
 
     @JsonProperty
-    private String phone;
+    private String timeslot;
+
+    @JsonProperty
+    private String pass;
+
+    @JsonProperty
+    private String passHolder;
+
+    @JsonProperty
+    private Collection<Climber> climbers;
 }
