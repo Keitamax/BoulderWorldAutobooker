@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Date;
 
@@ -30,7 +31,7 @@ public class BookingInfo {
 
     @JsonProperty
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
-    private Date date;
+    private LocalDate date;
 
     @JsonProperty
     private String timeslot;

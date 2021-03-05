@@ -16,30 +16,20 @@ package com.max.autobooker.utils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 /**
  * @author Maxime Rocchia
  */
 public class DateUtils {
-
-    public static int getMonth(Date date) {
-        DateFormat monthExtractor = new SimpleDateFormat("MM");
-        return Integer.valueOf(monthExtractor.format(date));
-    }
-
-    public static int getDayOfMonth(Date date) {
-        DateFormat dayExtractor = new SimpleDateFormat("dd");
-        return Integer.valueOf(dayExtractor.format(date));
-    }
-
-    public static String getFormattedDate(Date date) {
-        DateFormat monthAndYearExtractor = new SimpleDateFormat("MMM yyyy");
-        int dayOfMonth = getDayOfMonth(date);
+    public static String getFormattedDate(LocalDate date) {
+        int dayOfMonth = date.getDayOfMonth();
         return dayOfMonth
                 + getDayOfMonthSuffix(dayOfMonth)
                 + " "
-                + monthAndYearExtractor.format(date);
+                + DateTimeFormatter.ofPattern("MMM yyyy").format(date);
     }
 
     private static String getDayOfMonthSuffix(final int n) {

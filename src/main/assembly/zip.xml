@@ -20,7 +20,7 @@
 			<outputDirectory>/</outputDirectory>
 		</file>
 		<file>
-			<source>${project.basedir}/src/main/resources/example.json</source>
+			<source>${project.basedir}/src/main/resources/bookings.json</source>
 			<outputDirectory>/</outputDirectory>
 		</file>
 		<file>
