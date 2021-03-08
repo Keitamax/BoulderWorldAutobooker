@@ -10,6 +10,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 
 public class AutoBooker {
@@ -19,6 +20,7 @@ public class AutoBooker {
 
         String chromeVersion = getChromeVersion();
         boolean realBooking = "B".equalsIgnoreCase(ConsoleUtils.ask("Run for test (T) or real booking (B)? (if test, the bot will not click on the Book button)"));
+        System.out.println("Real booking: " + realBooking);
         String jsonContent = readJsonFile();
 
         configureSelenium(userDirectory, chromeVersion);
@@ -67,7 +69,7 @@ public class AutoBooker {
         String jsonPath = ConsoleUtils.ask("Input JSON path: (e.g. C:\\Me\\bookings.json or bookings.json if in same directory): ");
         try {
             FileInputStream fis = new FileInputStream(jsonPath);
-            return IOUtils.toString(fis, "UTF-8");
+            return IOUtils.toString(fis, StandardCharsets.UTF_8);
         } catch (IOException e) {
             System.out.println("Cannot read JSON file.");
             return readJsonFile();

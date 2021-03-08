@@ -50,7 +50,7 @@ public class BookerRunnable implements Runnable {
                 return;
             }
 
-            if(mondayOfCurrentWeek.equals(LocalDate.now())) {
+            if(ChronoUnit.DAYS.between(LocalDate.now(), bookingInfo.getDate()) > 6 && mondayOfCurrentWeek.equals(LocalDate.now())) {
                 waitUntilBookingsOpenToday();
             }
 
