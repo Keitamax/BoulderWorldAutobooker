@@ -1,32 +1,37 @@
 [
   {
-    "date": "06/03/2021",
-    "timeslot": "09:30 AM",
+    "date": "07/04/2021",
+    "timeslot": "07:30 PM",
     "pass": "MP",
-    "passHolder": "Captain America",
+    "passHolder": "Maxime Rocchia",
     "climbers": [
       {
-        "name": "Captain America",
-        "email": "captain.america@gmail.com",
-        "phone": "123456"
+        "name": "Maxime Rocchia",
+        "email": "maxime.rocchia@gmail.com",
+        "phone": "89505901"
       },
       {
-        "name": "Captain Obvious",
-        "email": "captain.america@gmail.com",
-        "phone": "123456"
+        "name": "Lorraine Tiglao",
+        "email": "lorraine.tiglao@gmail.com",
+        "phone": "88913854"
       }
     ]
   },
   {
-    "date": "30/03/2021",
-    "timeslot": "09:30 AM",
+    "date": "07/04/2021",
+    "timeslot": "07:30 PM",
     "pass": "MP",
-    "passHolder": "Captain Igloo",
+    "passHolder": "Assirem Medjber",
     "climbers": [
       {
-        "name": "Captain Igloo",
-        "email": "captain.igloo@gmail.com",
-        "phone": "999999"
+        "name": "Assirem Medjber",
+        "email": "medjber.assirem@gmail.com",
+        "phone": "82851429"
+      },
+      {
+        "name": "Limuel Alvarez Marzan",
+        "email": "limuel_marzan@yahoo.com.ph",
+        "phone": "91060245"
       }
     ]
   }

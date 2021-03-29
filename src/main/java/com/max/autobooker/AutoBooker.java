@@ -56,8 +56,8 @@ public class AutoBooker {
     }
 
     private static String getChromeVersion() {
-        String chromeVersion = ConsoleUtils.ask("This tool works only with Chrome. Input chrome version (88 or 89): ");
-        if (!chromeVersion.equals("88") && !chromeVersion.equals("89")) {
+        String chromeVersion = ConsoleUtils.ask("This tool works only with Chrome. Input chrome version (88 or 89 or 90): ");
+        if (!chromeVersion.equals("88") && !chromeVersion.equals("89") && !chromeVersion.equals("90")) {
             System.out.println("Incompatible Chrome version.");
             return getChromeVersion();
         } else {
