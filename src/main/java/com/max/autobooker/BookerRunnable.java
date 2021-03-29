@@ -91,6 +91,7 @@ public class BookerRunnable implements Runnable {
             bookSlot(bookingInfo, climber, realBooking);
         }
 
+        waitAndThenClick(By.cssSelector(".firstname"));
         clickAndInputText(By.cssSelector(".firstname"), climber.getName());
         clickAndInputText(By.cssSelector(".custemail"), climber.getEmail());
         clickAndInputText(By.cssSelector(".custmobile"), climber.getPhone());
