@@ -2,6 +2,7 @@ package com.max.autobooker;
 
 import com.max.autobooker.dto.BookingInfo;
 import com.max.autobooker.dto.Climber;
+import com.max.autobooker.exceptions.BookingException;
 import com.max.autobooker.utils.DateUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -42,30 +43,52 @@ public class BookerRunnable implements Runnable {
     @Override
     public void run() {
         try {
-            LocalDate mondayOfCurrentWeek = DateUtils.getMondayOfSameWeek(LocalDate.now());
-            LocalDate mondayOfBookingWeek = DateUtils.getMondayOfSameWeek(bookingInfo.getDate());
-            long daysUntilBookingsOpen = ChronoUnit.DAYS.between(mondayOfCurrentWeek, mondayOfBookingWeek) - 7;
-            if(daysUntilBookingsOpen > 0) {
-                System.out.println(getBookingInfoString() + ": " + "Bookings open on monday 1 week before the booking date. It's too early today!");
-                return;
-            }
-
-            if(ChronoUnit.DAYS.between(LocalDate.now(), bookingInfo.getDate()) > 6 && mondayOfCurrentWeek.equals(LocalDate.now())) {
-                waitUntilBookingsOpenToday();
-            }
+            checkBookingDay();
 
             driver = new ChromeDriver();
             webDriverWait = new WebDriverWait(driver, TIMEOUT_SECONDS);
             this.bookSlot(bookingInfo, climber, this.isRealBooking);
-//            Thread.sleep(60000);
+            System.out.println("Booking for " + climber.getName() + " SUCCESS");
         } catch (Exception e) {
-            System.out.println("Error occured: " + e.getMessage());
+            System.err.println("Booking for climber " + climber.getName() + " FAIL");
+            System.err.println("Error occured: " + e.getMessage());
         }
 //        finally {
 //            if (driver != null) {
 //                driver.close();
 //            }
 //        }
+    }
+
+    /**
+     * Check that the today is not too early for booking
+     * @throws InterruptedException
+     */
+    private void checkBookingDay() throws InterruptedException, BookingException {
+        if(LocalDate.now().isAfter(bookingInfo.getDate())) {
+            throw new BookingException(getBookingInfoString() + ": " + "The booking date is in the past");
+        }
+
+        LocalDate bookingOpeningDay;
+        if(DateUtils.isDateOnWeekend(bookingInfo.getDate())) {
+            LocalDate saturdayOfBookingWeek = DateUtils.getSaturdayOfSameWeek(bookingInfo.getDate());
+            bookingOpeningDay = saturdayOfBookingWeek.minusDays(7);
+            long daysUntilBookingsOpen = ChronoUnit.DAYS.between(LocalDate.now(), bookingOpeningDay);
+            if(daysUntilBookingsOpen > 0) {
+                throw new BookingException(getBookingInfoString() + ": " + "Bookings open on saturday 1 week before the booking date for weekend slots. It's too early today!");
+            }
+        } else {
+            LocalDate mondayOfBookingWeek = DateUtils.getMondayOfSameWeek(bookingInfo.getDate());
+            bookingOpeningDay = mondayOfBookingWeek.minusDays(7);
+            long daysUntilBookingsOpen = ChronoUnit.DAYS.between(LocalDate.now(), bookingOpeningDay);
+            if(daysUntilBookingsOpen > 0) {
+                throw new BookingException(getBookingInfoString() + ": " + "Bookings open on monday 1 week before the booking date for weekdays slots. It's too early today!");
+            }
+        }
+
+        if(ChronoUnit.DAYS.between(LocalDate.now(), bookingInfo.getDate()) > 6 && bookingOpeningDay.equals(LocalDate.now())) {
+            waitUntilBookingsOpenToday();
+        }
     }
 
     private void bookSlot(BookingInfo bookingInfo, Climber climber, boolean realBooking) throws InterruptedException {

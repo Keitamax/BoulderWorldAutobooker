@@ -1,5 +1,6 @@
 package com.max.autobooker.utils;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
@@ -33,8 +34,15 @@ public class DateUtils {
         }
     }
 
-
     public static LocalDate getMondayOfSameWeek(LocalDate date) {
         return date.with(WeekFields.of(Locale.FRANCE).dayOfWeek(), 1L);
+    }
+
+    public static LocalDate getSaturdayOfSameWeek(LocalDate date) {
+        return date.with(WeekFields.of(Locale.FRANCE).dayOfWeek(), 6L);
+    }
+
+    public static boolean isDateOnWeekend(LocalDate date) {
+        return date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY;
     }
 }

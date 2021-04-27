@@ -48,7 +48,7 @@ public class AutoBooker {
                     + File.separator + "mac"
                     + File.separator + "chromedriver" + chromeVersion;
         } else {
-            System.out.println("Incompatible OS. This tool can only run on Windows or Mac.");
+            System.err.println("Incompatible OS. This tool can only run on Windows or Mac.");
             throw new RuntimeException();
         }
         String driverPath = userDirectory + File.separator + driverRelativeFilePath;
