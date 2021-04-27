@@ -11,6 +11,5 @@ Requirements:
 
 Notes:
 - bookings are opened on Mondays 12 PM (for the following week's weekdays), and Saturdays 12 PM (for the following weekend).
-- this bot is mostly compatible for bookings on weekdays (rules for weekends have not been implemented yet)
-- run the bot on the Monday of the previous week of your slot (otherwise it will refuse to run)
+- run the bot on the day the bookings open for your slot (otherwise it will refuse to run)
 - the bot will sleep until 11:59AM. It will then try to find your slot. If it doesn't find it, it will refresh and try again (as long as you don't stop it)
